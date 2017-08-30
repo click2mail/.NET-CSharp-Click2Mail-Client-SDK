@@ -1,0 +1,5 @@
+C:\c2m\vbnet\click2mailCSharp\obj\Debug\click2mailCSharp.csprojResolveAssemblyReference.cache
+C:\c2m\vbnet\click2mailCSharp\bin\Debug\click2mailCSharp.dll
+C:\c2m\vbnet\click2mailCSharp\bin\Debug\click2mailCSharp.pdb
+C:\c2m\vbnet\click2mailCSharp\obj\Debug\click2mailCSharp.dll
+C:\c2m\vbnet\click2mailCSharp\obj\Debug\click2mailCSharp.pdb

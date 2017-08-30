@@ -1,0 +1,8 @@
+C:\c2m\vbnet\testSDKCSharp\bin\Debug\testSDKCSharp.exe.config
+C:\c2m\vbnet\testSDKCSharp\bin\Debug\testSDKCSharp.exe
+C:\c2m\vbnet\testSDKCSharp\bin\Debug\testSDKCSharp.pdb
+C:\c2m\vbnet\testSDKCSharp\obj\Debug\testSDKCSharp.csprojResolveAssemblyReference.cache
+C:\c2m\vbnet\testSDKCSharp\obj\Debug\testSDKCSharp.exe
+C:\c2m\vbnet\testSDKCSharp\obj\Debug\testSDKCSharp.pdb
+C:\c2m\vbnet\testSDKCSharp\bin\Debug\click2mailCSharp.dll
+C:\c2m\vbnet\testSDKCSharp\bin\Debug\click2mailCSharp.pdb
