@@ -11,7 +11,7 @@ namespace testSDKCSharp
         static void Main(string[] args)
         {
 
-           Batchc2mAPI r = new Batchc2mAPI("username", "password", Batchc2mAPI.liveMode.Stage);
+           Batchc2mAPI r = new Batchc2mAPI("vinnie881_severance", "ljfva09876FK", Batchc2mAPI.liveMode.Live);
             r.statusChanged += r_statusChanged;
 
             List<Batchc2mAPI.batchJob> batchJobs = new List<Batchc2mAPI.batchJob>();
