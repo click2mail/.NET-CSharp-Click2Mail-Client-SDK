@@ -47,6 +47,7 @@ namespace c2mAPI
         //TOOLS
         private string parseReturnxml(string strxml, string lookfor)
         {
+            Console.WriteLine(strxml + ", lookfor: " + lookfor);
 
             string s = "0";
 
@@ -67,22 +68,26 @@ namespace c2mAPI
         }
         public string runComplete(string PDF, string addressList, string docClass, string layout, string productionTime, string envelope, string color, string papertype, string printOption)
         {
+            Console.WriteLine("Creating document:" + PDF);
             createDocumentSimple(PDF);
             if (statusChanged != null)
             {
                 statusChanged("DocumentID:" + documentId);
             }
+            Console.WriteLine("Creating addresslist:" + addressList);
             createAddressListSimple(addressList);
             if (statusChanged != null)
             {
                 statusChanged("AddressID:" + addressListId);
             }
             waitForCompletedAddressList();
+            Console.WriteLine("Creating Job:" + docClass);
             createJobSimple(docClass, layout, productionTime, envelope, color, papertype, printOption);
             if (statusChanged != null)
             {
                 statusChanged("JobID:" + jobId);
             }
+            Console.WriteLine("Submitting Job:" + jobId);
             submitJobSimple();
             checkJobStatus();
 
@@ -496,7 +501,9 @@ namespace c2mAPI
             string xmlString = null;
             using (StringWriter stringWriter = new StringWriter())
             {
-                using (XmlWriter xmlTextWriter = XmlWriter.Create(stringWriter))
+                XmlWriterSettings settings = new XmlWriterSettings();
+                settings.OmitXmlDeclaration = true;
+                using (XmlWriter xmlTextWriter = XmlWriter.Create(stringWriter, settings))
                 {
                     doc.WriteTo(xmlTextWriter);
                     xmlTextWriter.Flush();
@@ -546,7 +553,9 @@ namespace c2mAPI
             string xmlString = null;
             using (StringWriter stringWriter = new StringWriter())
             {
-                using (XmlWriter xmlTextWriter = XmlWriter.Create(stringWriter))
+                XmlWriterSettings settings = new XmlWriterSettings();
+                settings.OmitXmlDeclaration = true;
+                using (XmlWriter xmlTextWriter = XmlWriter.Create(stringWriter, settings))
                 {
                     doc.WriteTo(xmlTextWriter);
                     xmlTextWriter.Flush();

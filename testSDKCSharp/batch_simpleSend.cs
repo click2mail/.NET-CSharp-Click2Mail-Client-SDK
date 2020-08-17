@@ -10,8 +10,8 @@ namespace testSDKCSharp
     {
         static void Main(string[] args)
         {
-
-           Batchc2mAPI r = new Batchc2mAPI("vinnie881_severance", "ljfva09876FK", Batchc2mAPI.liveMode.Live);
+            Console.WriteLine("Starting Batch Test");
+            Batchc2mAPI r = new Batchc2mAPI("mlavannis_rest", "3sap5t0E", Batchc2mAPI.liveMode.Stage);
             r.statusChanged += r_statusChanged;
 
             List<Batchc2mAPI.batchJob> batchJobs = new List<Batchc2mAPI.batchJob>();
@@ -37,8 +37,9 @@ namespace testSDKCSharp
             job = new Batchc2mAPI.batchJob(7, 10, "Letter 8.5 x 11", "Address on First Page", "Next Day", "#10 Double Window", "Full Color", "White 24#", "Printing One side", "First Class", addList);
             batchJobs.Add(job);
 
-            r.runComplete("C:\\c2m\\test.pdf", batchJobs);
-            Console.ReadLine();            
+            r.runComplete("/Users/mlavannis/Documents/PDFs/21pages.pdf", batchJobs);
+            Console.ReadLine();
+            Console.WriteLine("Completed Batch Test");
 
         }
         static void r_statusChanged(string reason)

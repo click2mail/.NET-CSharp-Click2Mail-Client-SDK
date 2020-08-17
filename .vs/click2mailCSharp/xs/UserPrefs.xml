@@ -1,0 +1,38 @@
+﻿<Properties StartupConfiguration="Multiple Projects">
+  <MonoDevelop.Ide.Workbench ActiveDocument="click2mailCSharp/Batchc2mAPI.cs">
+    <Files>
+      <File FileName="testSDKCSharp/rest_SimpleSend_Test.cs" Line="11" Column="31" />
+      <File FileName="click2mailCSharp/RestC2mAPI.cs" Line="558" Column="89" />
+      <File FileName="testSDKCSharp/batch_simpleSend.cs" Line="9" Column="27" />
+      <File FileName="click2mailCSharp/Batchc2mAPI.cs" Line="105" Column="1" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="click2mailCSharp" expanded="True">
+            <Node name="click2mailCSharp" expanded="True">
+              <Node name="Batchc2mAPI.cs" selected="True" />
+            </Node>
+            <Node name="testSDKCSharp" expanded="True" />
+          </Node>
+        </State>
+      </Pad>
+      <Pad Id="MonoDevelop.Debugger.WatchPad">
+        <State />
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.ItemProperties.testSDKCSharp PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations>
+    <MultiItemSolutionRunConfiguration Id="Multiple Projects" Name="Multiple Projects">
+      <Items>
+        <StartupItem ItemId="{F58A2B50-1269-421C-A173-38E1D74D4620}" ItemName="testSDKCSharp" ConfigurationId="Default" />
+      </Items>
+    </MultiItemSolutionRunConfiguration>
+  </MultiItemStartupConfigurations>
+</Properties>

@@ -12,8 +12,9 @@ namespace testSDKCSharp
     {
         static void Main(string[] args)
         {
-        
-            Restc2mAPI r = new Restc2mAPI("username", "password", Restc2mAPI.liveMode.Stage);
+            Console.WriteLine("Starting REST TEST");
+
+            Restc2mAPI r = new Restc2mAPI("mlavannis_rest", "3sap5t0E", Restc2mAPI.liveMode.Stage);
             r.statusChanged += r_statusChanged;
             r.jobStatusCheck += r_jobStatusCheck;
             r.addressList.Clear(); //Not needed just good habit to clear before you add any addresses
@@ -22,9 +23,9 @@ namespace testSDKCSharp
             r.addressList.Add(x);
             x = new Restc2mAPI.addressItem("John", "Smith2", "TestOrg", "1234 Test Street", "Ste 335", "", "Oak Brook", "IL", "60523", "");
             r.addressList.Add(x);
-            r.runComplete(@"C:\c2m\test.pdf", r.createXMLFromAddressList(), "Letter 8.5 x 11", "Address on Separate Page", "Next Day", "#10 Double Window", "Black and White", "White 24#", "Printing Both sides");
+            r.runComplete(@"/Users/mlavannis/Documents/PDFs/test_letter.pdf", r.createXMLFromAddressList(), "Letter 8.5 x 11", "Address on Separate Page", "Next Day", "#10 Double Window", "Black and White", "White 24#", "Printing Both sides");
             Console.ReadLine();
-
+            Console.WriteLine("Completed REST TEST");
         }
 
         static void r_jobStatusCheck(string id, string status, string description)
