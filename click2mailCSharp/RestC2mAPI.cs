@@ -407,6 +407,20 @@ namespace c2mAPI
                 Console.WriteLine("Starting attempt " + attempts);
                 attempts++;
 
+                if (url.Contains("submit"))
+                {
+                    Console.WriteLine("Checking if job is already submitted");
+                    String jobStatusResponseXML = checkJobStatus();
+                    Console.WriteLine("Job status response text: " + jobStatusResponseXML);
+                    int jobStatus = Int32.Parse(parseReturnxml(jobStatusResponseXML, "status"));
+                    if (jobStatus > 1 && jobStatus < 6)
+                    {
+                        Console.WriteLine("Job has been already submitted.");
+                        return "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><job><id>" + jobId + "</id><status>0</status><description>Success</description></job>";
+                    }
+
+                }
+
                 // Here we create the request and write the POST data to it.
                 HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(url);
                 request.Method = Method;
@@ -698,7 +712,17 @@ namespace c2mAPI
                         {
                             responseText = responseReader.ReadToEnd();
                             Console.WriteLine("Response text = " + responseText);
-                            tryAgain = false;
+                            int documentId = Int32.Parse(parseReturnxml(responseText, "id"));
+                            if (documentId == 0)
+                            {
+                                Console.WriteLine("documentId is 0. Will try again in 60 sec.");
+                                System.Threading.Thread.Sleep(60000);
+                                tryAgain = true;
+                            }
+                            else
+                            {
+                                tryAgain = false;
+                            }
 
                         }
 
@@ -746,6 +770,7 @@ namespace c2mAPI
                 }
             }
 
+            Console.WriteLine("Submit responseText: " + responseText);
             return responseText;
 
         }
