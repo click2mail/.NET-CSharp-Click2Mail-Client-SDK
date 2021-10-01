@@ -19,8 +19,10 @@ C:/c2m/csharpNet/testSDKCSharp/obj/Debug/testSDKCSharp.csprojResolveAssemblyRefe
 /Users/mlavannis/github/NET-CSharp-Click2Mail-Client-SDK/testSDKCSharp/bin/Debug/testSDKCSharp.pdb
 /Users/mlavannis/github/NET-CSharp-Click2Mail-Client-SDK/testSDKCSharp/bin/Debug/click2mailCSharp.dll
 /Users/mlavannis/github/NET-CSharp-Click2Mail-Client-SDK/testSDKCSharp/bin/Debug/click2mailCSharp.pdb
-/Users/mlavannis/github/NET-CSharp-Click2Mail-Client-SDK/testSDKCSharp/obj/Debug/testSDKCSharp.csprojAssemblyReference.cache
 /Users/mlavannis/github/NET-CSharp-Click2Mail-Client-SDK/testSDKCSharp/obj/Debug/testSDKCSharp.csproj.CoreCompileInputs.cache
 /Users/mlavannis/github/NET-CSharp-Click2Mail-Client-SDK/testSDKCSharp/obj/Debug/testSDKCSharp.csproj.CopyComplete
 /Users/mlavannis/github/NET-CSharp-Click2Mail-Client-SDK/testSDKCSharp/obj/Debug/testSDKCSharp.exe
 /Users/mlavannis/github/NET-CSharp-Click2Mail-Client-SDK/testSDKCSharp/obj/Debug/testSDKCSharp.pdb
+/Users/mlavannis/github/NET-CSharp-Click2Mail-Client-SDK/testSDKCSharp/obj/Debug/testSDKCSharp.csproj.AssemblyReference.cache
+/Users/mlavannis/github/NET-CSharp-Click2Mail-Client-SDK/testSDKCSharp/bin/Debug/RestSharp.dll
+/Users/mlavannis/github/NET-CSharp-Click2Mail-Client-SDK/testSDKCSharp/bin/Debug/RestSharp.xml

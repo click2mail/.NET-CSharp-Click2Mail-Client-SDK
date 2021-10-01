@@ -10,6 +10,8 @@ using System.Xml;
 using System.Net;
 using System.IO;
 using System;
+using RestSharp;
+using RestSharp.Authenticators;
 
 
 namespace c2mAPI
@@ -100,10 +102,11 @@ namespace c2mAPI
         }
         public string checkJobStatus()
         {
-            string results = null;
+            String url = getRestURL() + "/molpro/jobs/" + jobId;
+            Console.WriteLine("Calling URL " + url);
             System.Collections.Specialized.NameValueCollection y = new System.Collections.Specialized.NameValueCollection();
             y.Clear();
-            results = createJobPost(getRestURL() + "/molpro/jobs/" + jobId, y, "GET");
+            string results = createJobPost(url, y, Method.GET);
             if (jobStatusCheck != null)
             {
                 jobStatusCheck(parseReturnxml(results, "id"), parseReturnxml(results, "status"), parseReturnxml(results, "description"));
@@ -115,7 +118,7 @@ namespace c2mAPI
             string results = null;
             System.Collections.Specialized.NameValueCollection y = new System.Collections.Specialized.NameValueCollection();
             y.Add("billingType", "User Credit");
-            results = createJobPost(getRestURL() + "/molpro/jobs/" + jobId + "/submit", y, "POST");
+            results = createJobPost(getRestURL() + "/molpro/jobs/" + jobId + "/submit", y, Method.POST);
             return results;
         }
         public int createJobSimple(string docClass, string layout, string productionTime, string envelope, string color, string papertype, string printOption)
@@ -127,42 +130,54 @@ namespace c2mAPI
             y.Add("envelope", envelope);
             y.Add("color", color);
             y.Add("paperType", papertype);
-            //'y.Add("printOption", "Printing One side")
             y.Add("printOption", printOption);
-
             y.Add("documentId", documentId.ToString());
             y.Add("addressId", addressListId.ToString());
             string results = null;
-            results = createJobPost(getRestURL() + "/molpro/jobs", y, "POST");
+            results = createJobPost(getRestURL() + "/molpro/jobs", y, Method.POST);
             jobId = Int32.Parse(parseReturnxml(results, "id"));
             return jobId;
         }
-        public void waitForCompletedAddressList()
+        public String waitForCompletedAddressList()
         {
-            System.Collections.Specialized.NameValueCollection y = new System.Collections.Specialized.NameValueCollection();
-
             string status = "0";
-            string results = "0";
-            results = createJobPost(getRestURL() + "/molpro/addressLists/" + addressListId, y, "GET");
+            String url = getRestURL() + "/molpro/addressLists/" + addressListId;
+            Console.WriteLine("Calling URL " + url);
+
+            var client = new RestClient();
+            client.Authenticator = new HttpBasicAuthenticator(_username, _password);
+
+            var request = new RestRequest(url, Method.GET);
+            request.AddHeader("Content-Type", "application/xml");
+            request.AddHeader("Accept", "application/xml");
+
+            var response = client.Get(request);
+            string results = response.Content;
             status = parseReturnxml(results, "status");
 
-            if ((status != "3"))
+            int MAX_ATTEMPTS = 5;
+            int attempts = 0;
+            while (status != "3" && attempts < MAX_ATTEMPTS)
             {
-                while ((status != "3"))
+                attempts++;      
+                if (statusChanged != null)
                 {
-                    if (statusChanged != null)
-                    {
-                        statusChanged("Waiting Address List to processes.  Current Status is: " + status);
-                    }
-                    results = createJobPost(getRestURL() + "/molpro/addressLists/" + addressListId, y, "GET");
-                    status = parseReturnxml(results, "status");
-                    System.Threading.Thread.Sleep(5000);
+                    statusChanged("Waiting Address List to processes.  Current Status is: " + status + " (Attempt# " + attempts + ")");
                 }
+                System.Threading.Thread.Sleep(5000);
+                status = waitForCompletedAddressList();
             }
-            if (statusChanged != null)
+            if (attempts < MAX_ATTEMPTS)
             {
                 statusChanged("The status received is 3, which means we can proceed");
             }
+            else
+            {
+                statusChanged("Timeout waiting for Address List to process. Will stop trying now.");
+            }
+
+            return status;
+
         }
         public int createDocumentSimple(string pdf)
         {
@@ -240,7 +255,6 @@ namespace c2mAPI
         {
             Console.WriteLine("Calling URL " + uri);
             string responseText = "";
-
             int attempts = 0;
             int MAX_ATTEMPTS = 5;
             bool tryAgain = true;
@@ -249,105 +263,38 @@ namespace c2mAPI
             {
                 Console.WriteLine("Starting attempt " + attempts);
                 attempts++;
-                System.Net.HttpWebRequest request = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(uri);
-
-                request.ContentType = "application/xml";
-                request.Method = "POST";
-                request.KeepAlive = true;
-                //request.Credentials = Net.CredentialCache.DefaultCredentials
-
-                string authinfo = null;
-                authinfo = Convert.ToBase64String(Encoding.Default.GetBytes(_authinfo));
-                request.Headers["Authorization"] = "Basic " + authinfo;
-
-                using (System.IO.Stream requestStream = request.GetRequestStream())
-                {
-
-                    using (Stream fileStream = GenerateStreamFromString(xml))
-                    {
-
-                        byte[] buffer = new byte[4097];
-                        Int32 bytesRead = fileStream.Read(buffer, 0, buffer.Length);
-
-
-                        while ((bytesRead > 0))
-                        {
-                            requestStream.Write(buffer, 0, bytesRead);
-                            bytesRead = fileStream.Read(buffer, 0, buffer.Length);
-
-                        }
-
-                    }
-
-
-
-                }
-
-                System.Net.WebResponse response = null;
-
                 try
                 {
-                    response = request.GetResponse();
+                    var client = new RestClient();
+                    client.Authenticator = new HttpBasicAuthenticator(_username, _password);
 
-                    using (System.IO.Stream responseStream = response.GetResponseStream())
+                    var request = new RestRequest(uri, Method.POST);
+                    request.AddHeader("Content-Type", "application/xml");
+                    request.AddHeader("Accept", "application/xml");
+                    request.AddParameter("application/xml", xml, ParameterType.RequestBody);
+
+                    IRestResponse response = client.Post(request);
+                    int httpResponseCode = (int)response.StatusCode;
+                    if (httpResponseCode == 500 || httpResponseCode == 502 || httpResponseCode == 504)
                     {
-
-                        using (System.IO.StreamReader responseReader = new System.IO.StreamReader(responseStream))
-                        {
-
-                            responseText = responseReader.ReadToEnd();
-                            Console.WriteLine(responseText);
-                            tryAgain = false;
-
-                        }
-
-                    }
-
-                    response.Close();
-
-                }
-                catch (System.Net.WebException exception)
-                {
-                    Console.WriteLine("Exception encountered");
-                    response = exception.Response;
-
-
-                    if ((response != null))
-                    {
-                        using (System.IO.StreamReader reader = new System.IO.StreamReader(response.GetResponseStream()))
-                        {
-                            responseText = reader.ReadToEnd();
-                            Console.WriteLine("Exception response text: " + responseText);
-                        }
-
-                        int httpResponseCode = (int)((HttpWebResponse)response).StatusCode;
-                        Console.WriteLine("Exception HTTP respnonse code is " + httpResponseCode);
-                        if (httpResponseCode == 500 || httpResponseCode == 502 || httpResponseCode == 504)
-                        {
-                            Console.WriteLine("Will try again in 60 sec.");
-                            System.Threading.Thread.Sleep(60000);
-                            tryAgain = true;
-                        }
-                        else
-                        {
-                            tryAgain = false;
-                        }
-
-                        response.Close();
+                        Console.WriteLine("Received HTTP response code " + httpResponseCode + ". Will try again in 60 sec.");
+                        System.Threading.Thread.Sleep(60000);
+                        tryAgain = true;
                     }
                     else
                     {
-                        Console.WriteLine("Exception response is null");
+                        responseText = response.Content;
                         tryAgain = false;
                     }
-
-                    request.Abort();
-
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Exception encountered: " + e.Message);
+                    tryAgain = false;
                 }
             }
 
             return responseText;
-
         }
 
         public enum liveMode
@@ -382,127 +329,52 @@ namespace c2mAPI
             return newString.ToString();
 
         }
-        public string createJobPost(string url, System.Collections.Specialized.NameValueCollection nameValueCollection, string Method)
+        public string createJobPost(string url, System.Collections.Specialized.NameValueCollection nameValueCollection, Method method)
         {
             Console.WriteLine("Calling URL " + url);
-            // Here we convert the nameValueCollection to POST data.
-            // This will only work if nameValueCollection contains some items.
-            dynamic parameters = new StringBuilder();
             string responseText = "";
-            foreach (string key in nameValueCollection.Keys)
-            {
-                parameters.AppendFormat("{0}={1}&", WebUtility.UrlEncode(key), WebUtility.UrlEncode(nameValueCollection[key]));
-            }
-            if ((parameters.Length > 0))
-            {
-                parameters.Length -= 1;
-            }
 
             int attempts = 0;
             int MAX_ATTEMPTS = 5;
             bool tryAgain = true;
-
             while (tryAgain && attempts < MAX_ATTEMPTS)
             {
                 Console.WriteLine("Starting attempt " + attempts);
                 attempts++;
-
-                if (url.Contains("submit"))
-                {
-                    Console.WriteLine("Checking if job is already submitted");
-                    String jobStatusResponseXML = checkJobStatus();
-                    Console.WriteLine("Job status response text: " + jobStatusResponseXML);
-                    int jobStatus = Int32.Parse(parseReturnxml(jobStatusResponseXML, "status"));
-                    if (jobStatus > 1 && jobStatus < 6)
-                    {
-                        Console.WriteLine("Job has been already submitted.");
-                        return "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><job><id>" + jobId + "</id><status>0</status><description>Success</description></job>";
-                    }
-
-                }
-
-                // Here we create the request and write the POST data to it.
-                HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(url);
-                request.Method = Method;
-                request.KeepAlive = true;
-                //request.Credentials = Net.CredentialCache.DefaultCredentials
-
-                string authinfo = null;
-                authinfo = Convert.ToBase64String(Encoding.Default.GetBytes(_authinfo));
-                request.Headers["Authorization"] = "Basic " + authinfo;
-
-                if ((parameters.Length > 0))
-                {
-                    using (StreamWriter writer = new StreamWriter(request.GetRequestStream()))
-                    {
-                        writer.Write(parameters.ToString());
-                    }
-                }
-
-                System.Net.WebResponse response = null;
-
-
                 try
                 {
-                    response = request.GetResponse();
-
-                    using (System.IO.Stream responseStream = response.GetResponseStream())
+                    var client = new RestClient();
+                    client.Authenticator = new HttpBasicAuthenticator(_username, _password);
+                    var request = new RestRequest(url, method);
+                    request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
+                    request.AddHeader("Accept", "application/xml");
+                    foreach (string key in nameValueCollection.Keys)
                     {
-
-                        using (System.IO.StreamReader responseReader = new System.IO.StreamReader(responseStream))
-                        {
-
-                            responseText = responseReader.ReadToEnd();
-                            tryAgain = false;
-
-                        }
-
+                        request.AddParameter(key, nameValueCollection[key]);
                     }
-
-                    response.Close();
-
-                }
-                catch (System.Net.WebException exception)
-                {
-                    Console.WriteLine("Exception encountered");
-                    response = exception.Response;
-
-
-                    if ((response != null))
+                    IRestResponse response = (method == Method.POST ? client.Post(request) : client.Get(request));
+                    int httpResponseCode = (int) response.StatusCode;
+                    if (httpResponseCode == 500 || httpResponseCode == 502 || httpResponseCode == 504)
                     {
-                        using (System.IO.StreamReader reader = new System.IO.StreamReader(response.GetResponseStream()))
-                        {
-                            responseText = reader.ReadToEnd();
-                            Console.WriteLine("Exception response text: " + responseText);
-                        }
-
-                        int httpResponseCode = (int)((HttpWebResponse)response).StatusCode;
-                        Console.WriteLine("Exception HTTP respnonse code is " + httpResponseCode);
-                        if (httpResponseCode == 500 || httpResponseCode == 502 || httpResponseCode == 504)
-                        {
-                            Console.WriteLine("Will try again in 60 sec.");
-                            System.Threading.Thread.Sleep(60000);
-                            tryAgain = true;
-                        }
-                        else
-                        {
-                            tryAgain = false;
-                        }
-
-                        response.Close();
+                        Console.WriteLine("Received HTTP response code " + httpResponseCode + ". Will try again in 60 sec.");
+                        System.Threading.Thread.Sleep(60000);
+                        tryAgain = true;
                     }
                     else
                     {
-                        Console.WriteLine("Exception response is null");
+                        responseText = response.Content;
                         tryAgain = false;
                     }
-
-                    request.Abort();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Exception encountered: " + e.Message);
+                    tryAgain = false;
                 }
             }
-
             return responseText;
         }
+
 
         public string createXMLFromAddressList()
         {
@@ -629,151 +501,55 @@ namespace c2mAPI
             return xmlString;
 
         }
+
         private string createDocument(string uri, string filePath, string fileParameterName, string contentType, System.Collections.Specialized.NameValueCollection otherParameters)
         {
             Console.WriteLine("Calling URL " + uri);
             string responseText = "";
-            string boundary = "---------------------------" + DateTime.Now.Ticks.ToString("x");
-            string newLine = System.Environment.NewLine;
-            byte[] boundaryBytes = System.Text.Encoding.ASCII.GetBytes(newLine + "--" + boundary + newLine);
             int attempts = 0;
             int MAX_ATTEMPTS = 5;
             bool tryAgain = true;
 
             while (tryAgain && attempts < MAX_ATTEMPTS)
             {
-                Console.WriteLine("Starting attempt " + attempts);
                 attempts++;
-                System.Net.HttpWebRequest request = (HttpWebRequest)System.Net.WebRequest.Create(uri);
-
-                request.ContentType = "multipart/form-data; boundary=" + boundary;
-                request.Method = "POST";
-                request.KeepAlive = true;
-                //request.Credentials = Net.CredentialCache.DefaultCredentials
-
-                string authinfo = null;
-                authinfo = Convert.ToBase64String(Encoding.Default.GetBytes(_authinfo));
-                request.Headers["Authorization"] = "Basic " + authinfo;
-
-                using (System.IO.Stream requestStream = request.GetRequestStream())
-                {
-
-                    string formDataTemplate = "Content-Disposition: form-data; name=\"{0}\"{1}Content-Type: text/plain; charset=UTF-8{1}{1}{2}";
-
-
-                    foreach (string key in otherParameters.Keys)
-                    {
-                        requestStream.Write(boundaryBytes, 0, boundaryBytes.Length);
-                        string formItem = string.Format(formDataTemplate, key, newLine, otherParameters[key]);
-                        byte[] formItemBytes = System.Text.Encoding.UTF8.GetBytes(formItem);
-                        requestStream.Write(formItemBytes, 0, formItemBytes.Length);
-
-                    }
-
-                    requestStream.Write(boundaryBytes, 0, boundaryBytes.Length);
-
-                    string headerTemplate = "Content-Disposition: form-data; name=\"{0}\"; filename=\"{1}\"{2}Content-Type: {3}{2}Content-Transfer-Encoding: binary{2}{2}";
-                    string header = string.Format(headerTemplate, fileParameterName, filePath, newLine, contentType);
-                    byte[] headerBytes = System.Text.Encoding.UTF8.GetBytes(header);
-                    requestStream.Write(headerBytes, 0, headerBytes.Length);
-
-                    using (System.IO.FileStream fileStream = new System.IO.FileStream(filePath, System.IO.FileMode.Open, System.IO.FileAccess.Read))
-                    {
-
-                        byte[] buffer = new byte[4097];
-                        Int32 bytesRead = fileStream.Read(buffer, 0, buffer.Length);
-
-
-                        while ((bytesRead > 0))
-                        {
-                            requestStream.Write(buffer, 0, bytesRead);
-                            bytesRead = fileStream.Read(buffer, 0, buffer.Length);
-
-                        }
-
-                    }
-
-                    byte[] trailer = System.Text.Encoding.ASCII.GetBytes(newLine + "--" + boundary + "--" + newLine);
-                    requestStream.Write(trailer, 0, trailer.Length);
-
-                }
-
-                System.Net.WebResponse response = null;
-
-
                 try
                 {
-                    response = request.GetResponse();
+                    var client = new RestClient();
+                    client.Authenticator = new HttpBasicAuthenticator(_username, _password);
 
-                    using (System.IO.Stream responseStream = response.GetResponseStream())
+                    var request = new RestRequest(uri, Method.POST);
+                    request.AddHeader("Content-Type", "multipart/form-data");
+                    request.AddHeader("Accept", "application/xml");
+                    request.AddFile(fileParameterName, filePath);
+                    foreach (string key in otherParameters.Keys)
                     {
-
-                        using (System.IO.StreamReader responseReader = new System.IO.StreamReader(responseStream))
-                        {
-                            responseText = responseReader.ReadToEnd();
-                            Console.WriteLine("Response text = " + responseText);
-                            int documentId = Int32.Parse(parseReturnxml(responseText, "id"));
-                            if (documentId == 0)
-                            {
-                                Console.WriteLine("documentId is 0. Will try again in 60 sec.");
-                                System.Threading.Thread.Sleep(60000);
-                                tryAgain = true;
-                            }
-                            else
-                            {
-                                tryAgain = false;
-                            }
-
-                        }
-
+                        request.AddParameter(key, otherParameters[key]);
                     }
 
-                    response.Close();
-
-                }
-                catch (System.Net.WebException exception)
-                {
-                    Console.WriteLine("Exception encountered");
-                    response = exception.Response;
-
-
-                    if ((response != null))
+                    IRestResponse response = client.Post(request);
+                    int httpResponseCode = (int)response.StatusCode;
+                    if (httpResponseCode == 500 || httpResponseCode == 502 || httpResponseCode == 504)
                     {
-                        using (System.IO.StreamReader reader = new System.IO.StreamReader(response.GetResponseStream()))
-                        {
-                            responseText = reader.ReadToEnd();
-                            Console.WriteLine("Exception response text: " + responseText);
-                        }
-
-                        int httpResponseCode = (int)((HttpWebResponse)response).StatusCode;
-                        if (httpResponseCode == 500 || httpResponseCode == 502 || httpResponseCode == 504)
-                        {
-                            Console.WriteLine("Exception HTTP respnonse code is " + httpResponseCode + ". Will try again in 60 sec.");
-                            System.Threading.Thread.Sleep(60000);
-                            tryAgain = true;
-                        }
-                        else
-                        {
-                            tryAgain = false;
-                        }
-                        response.Close();
-
+                        Console.WriteLine("Exception HTTP respnonse code is " + httpResponseCode + ". Will try again in 60 sec.");
+                        System.Threading.Thread.Sleep(60000);
+                        tryAgain = true;
                     }
                     else
                     {
-                        Console.WriteLine("Exception response is null");
+                        responseText = response.Content;
                         tryAgain = false;
                     }
-
-                    request.Abort();
-
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Exception encountered: " + e.Message);
+                    tryAgain = false;
                 }
             }
-
-            Console.WriteLine("Submit responseText: " + responseText);
             return responseText;
-
         }
+
     }
 
 }
