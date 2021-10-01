@@ -3,3 +3,12 @@
 *.pdb
 *.exe
 *.cache
+.vs/click2mailCSharp/xs/project-cache/click2mailCSharp-Debug.json
+.vs/click2mailCSharp/xs/project-cache/testSDKCSharp-Debug.json
+.vs/click2mailCSharp/xs/UserPrefs.xml
+click2mailCSharp/bin/Debug/click2mailCSharp.dll
+click2mailCSharp/bin/Debug/click2mailCSharp.pdb
+click2mailCSharp/obj/Debug/click2mailCSharp.csproj.CopyComplete
+click2mailCSharp/obj/Debug/click2mailCSharp.dll
+click2mailCSharp/obj/Debug/click2mailCSharp.pdb
+packages/RestSharp.106.12.0/.signature.p7s

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using c2mAPI;
 namespace testSDKCSharp
 {
-    class batch_simpleSend
+    class batch_simpleSend2
     {
         static void Main(string[] args)
         {
