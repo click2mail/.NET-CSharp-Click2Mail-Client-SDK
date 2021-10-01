@@ -8,13 +8,13 @@ using c2mAPI;
 
 namespace testSDKCSharp
 {
-    class batch_simpleSend
+    class rest_SimpleSend
     {
         static void Main(string[] args)
         {
             Console.WriteLine("Starting REST TEST");
 
-            Restc2mAPI r = new Restc2mAPI("mlavannis", "r89hou5L", Restc2mAPI.liveMode.Stage);
+            Restc2mAPI r = new Restc2mAPI("username", "password", Restc2mAPI.liveMode.Stage);
             r.statusChanged += r_statusChanged;
             r.jobStatusCheck += r_jobStatusCheck;
             r.addressList.Clear(); //Not needed just good habit to clear before you add any addresses
