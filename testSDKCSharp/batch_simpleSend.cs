@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 using c2mAPI;
 namespace testSDKCSharp
 {
-    class batch_simpleSend
+    class batch_simpleSen
     {
         static void Main(string[] args)
         {
             Console.WriteLine("Starting Batch Test");
-            Batchc2mAPI r = new Batchc2mAPI("mlavannis_rest", "3sap5t0E", Batchc2mAPI.liveMode.Stage);
+            Batchc2mAPI r = new Batchc2mAPI("username", "password", Batchc2mAPI.liveMode.Stage);
             r.statusChanged += r_statusChanged;
 
             List<Batchc2mAPI.batchJob> batchJobs = new List<Batchc2mAPI.batchJob>();
