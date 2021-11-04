@@ -1,14 +1,15 @@
 ﻿<Properties StartupConfiguration="Multiple Projects">
-  <MonoDevelop.Ide.Workbench ActiveDocument="testSDKCSharp/rest_SinglePiece_Test.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="testSDKCSharp/Properties/AssemblyInfo.cs">
     <Files>
       <File FileName="click2mailCSharp/Properties/AssemblyInfo.cs" Line="1" Column="1" IsPinned="True" />
       <File FileName="testSDKCSharp/rest_SimpleSend_Test.cs" Line="26" Column="26" />
-      <File FileName="click2mailCSharp/RestC2mAPI.cs" />
+      <File FileName="click2mailCSharp/RestC2mAPI.cs" Line="124" Column="20" />
       <File FileName="testSDKCSharp/rest_checkStatusOfJob.cs" Line="16" Column="29" />
       <File FileName="testSDKCSharp/batch_simpleSend.cs" Line="9" Column="27" />
       <File FileName="testSDKCSharp/rest_SimpleSendCustomAddress_Test.cs" Line="1" Column="1" />
       <File FileName="testSDKCSharp/rest_createDocument_Test.cs" Line="1" Column="1" />
-      <File FileName="testSDKCSharp/rest_SinglePiece_Test.cs" Line="11" Column="26" />
+      <File FileName="testSDKCSharp/rest_SinglePiece_Test.cs" Line="11" Column="17" />
+      <File FileName="testSDKCSharp/Properties/AssemblyInfo.cs" Line="1" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -18,7 +19,9 @@
               <Node name="Properties" expanded="True" />
             </Node>
             <Node name="testSDKCSharp" expanded="True">
-              <Node name="rest_SinglePiece_Test.cs" selected="True" />
+              <Node name="Properties" expanded="True">
+                <Node name="AssemblyInfo.cs" selected="True" />
+              </Node>
             </Node>
           </Node>
         </State>
