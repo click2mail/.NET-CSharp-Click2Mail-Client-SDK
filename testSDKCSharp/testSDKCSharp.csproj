@@ -54,6 +54,7 @@
     <Compile Include="rest_SimpleSendCustomAddress_Test.cs" />
     <Compile Include="rest_SimpleSend_Test.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="rest_SinglePiece_Test%29.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
