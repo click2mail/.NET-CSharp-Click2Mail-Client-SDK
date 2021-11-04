@@ -22,3 +22,6 @@ click2mailCSharp/bin/Debug/click2mailCSharp.dll
 *.dll
 *.pdb
 *.exe
+*.dll
+*.pdb
+*.exe
