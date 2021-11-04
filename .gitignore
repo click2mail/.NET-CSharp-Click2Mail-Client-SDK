@@ -12,3 +12,13 @@ click2mailCSharp/obj/Debug/click2mailCSharp.csproj.CopyComplete
 click2mailCSharp/obj/Debug/click2mailCSharp.dll
 click2mailCSharp/obj/Debug/click2mailCSharp.pdb
 packages/RestSharp.106.12.0/.signature.p7s
+click2mailCSharp/bin/Debug/click2mailCSharp.dll
+click2mailCSharp/bin/Debug/click2mailCSharp.dll
+*.pdb
+*.dll
+*.dll
+*.exe
+*.cache
+*.dll
+*.pdb
+*.exe

@@ -121,6 +121,16 @@ namespace c2mAPI
             results = createJobPost(getRestURL() + "/molpro/jobs/" + jobId + "/submit", y, Method.POST);
             return results;
         }
+        public int createJobSinglePiece(string templateName, string pdf, string addressXML)
+        {
+            System.Collections.Specialized.NameValueCollection y = new System.Collections.Specialized.NameValueCollection();
+            y.Add("templateName", templateName);
+            y.Add("address", addressXML);
+            y.Add("billingType", "User Credit");
+            string results = callAPIWithFileParam(getRestURL() + "/molpro/jobs/jobTemplate/submitonepiece/", pdf, "document", "application/pdf", y);
+            jobId = Int32.Parse(parseReturnxml(results, "id"));
+            return jobId;
+        }
         public int createJobSimple(string docClass, string layout, string productionTime, string envelope, string color, string papertype, string printOption)
         {
             System.Collections.Specialized.NameValueCollection y = new System.Collections.Specialized.NameValueCollection();
@@ -185,7 +195,7 @@ namespace c2mAPI
             x.Add("documentName", "sample Letter");
             x.Add("documentClass", "Letter 8.5 x 11");
             x.Add("documentFormat", "PDF");
-            string results = createDocument(getRestURL() + "/molpro/documents/", pdf, "file", "application/pdf", x);
+            string results = callAPIWithFileParam(getRestURL() + "/molpro/documents/", pdf, "file", "application/pdf", x);
             documentId = Int32.Parse(parseReturnxml(results, "id"));
             return documentId;
         }
@@ -502,7 +512,7 @@ namespace c2mAPI
 
         }
 
-        private string createDocument(string uri, string filePath, string fileParameterName, string contentType, System.Collections.Specialized.NameValueCollection otherParameters)
+        private string callAPIWithFileParam(string uri, string filePath, string fileParameterName, string contentType, System.Collections.Specialized.NameValueCollection otherParameters)
         {
             Console.WriteLine("Calling URL " + uri);
             string responseText = "";
