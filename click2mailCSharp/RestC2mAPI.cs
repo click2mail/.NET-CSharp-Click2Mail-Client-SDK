@@ -123,12 +123,14 @@ namespace c2mAPI
         }
         public int createJobSinglePiece(string templateName, string pdf, string addressXML)
         {
+            Console.WriteLine("Creating single piece job with template" + templateName + " and address: " + addressXML);
             System.Collections.Specialized.NameValueCollection y = new System.Collections.Specialized.NameValueCollection();
             y.Add("templateName", templateName);
             y.Add("address", addressXML);
             y.Add("billingType", "User Credit");
             string results = callAPIWithFileParam(getRestURL() + "/molpro/jobs/jobTemplate/submitonepiece/", pdf, "document", "application/pdf", y);
             jobId = Int32.Parse(parseReturnxml(results, "id"));
+            Console.WriteLine("Created job : " + jobId);
             return jobId;
         }
         public int createJobSimple(string docClass, string layout, string productionTime, string envelope, string color, string papertype, string printOption)
