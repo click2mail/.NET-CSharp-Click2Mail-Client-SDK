@@ -123,7 +123,7 @@ namespace c2mAPI
         }
         public int createJobSinglePiece(string templateName, string pdf, string addressXML)
         {
-            Console.WriteLine("Creating single piece job with template" + templateName + " and address: " + addressXML);
+            Console.WriteLine("Creating single piece job with template: " + templateName + " and address: " + addressXML);
             System.Collections.Specialized.NameValueCollection y = new System.Collections.Specialized.NameValueCollection();
             y.Add("templateName", templateName);
             y.Add("address", addressXML);
