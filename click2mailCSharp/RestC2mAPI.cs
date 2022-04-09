@@ -485,10 +485,9 @@ namespace c2mAPI
             System.Xml.XmlElement address = null;
             foreach (List<KeyValuePair<string, string>> a in myList)
             {
-
+                address = doc.CreateElement("address");
                 foreach (KeyValuePair<string, string> aa in a)
                 {
-                    address = doc.CreateElement("address");
                     System.Xml.XmlElement i = doc.CreateElement(aa.Key);
                     i.InnerXml = aa.Value;
                     address.AppendChild(i);
